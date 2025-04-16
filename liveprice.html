@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Live Market Prices - MandiMitra</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: #b9d8f0;
+      color: #333;
+      padding: 1rem;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: transparent;
+      margin-bottom: 40px;
+    }
+
+    .logo img {
+      width: 150px;
+      height: auto;
+    }
+
+    .menu {
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .btn-group {
+      margin: 20px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn-group button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      background-color: #99ff99; /* default inactive color */
+      color: #333;
+    }
+
+    .btn-group button.active {
+      background-color: #4da6ff !important;
+      color: white !important;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid #aaa;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #e6f2ff;
+    }
+
+    td:nth-child(2) {
+      color: red;
+    }
+
+    td:nth-child(3) {
+      color: green;
+    }
+
+    .note {
+      margin-top: 10px;
+      font-style: italic;
+      font-size: 0.9rem;
+    }
+
+    #locationDisplay {
+      font-weight: bold;
+      font-size: 1rem;
+      margin-top: 10px;
+    }
+
+    .footer-icons {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .footer-icons img {
+      width: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="logo">
+      <img src="https://res.cloudinary.com/dtnmwdkou/image/upload/v1744215563/Untitled_design-removebg-preview_g1gy1h.png" alt="Mandimitra Logo">
+    </div>
+    <!-- <div class="menu">☰</div> -->
+  </header>
+
+  <div id="locationDisplay">📍 Detecting your location...</div>
+
+  <div class="btn-group">
+    <button class="veg active" onclick="updateTable('vegetables', this)">Vegetables</button>
+    <button class="oil" onclick="updateTable('oil', this)">Oil seeds</button>
+    <button class="pulses" onclick="updateTable('pulses', this)">Pulses</button>
+    <button class="fruits" onclick="updateTable('fruits', this)">Fruits</button>
+  </div>
+
+  <div id="tableContainer">
+    <table>
+      <tr>
+        <th>Varieties</th>
+        <th>Market Price</th>
+        <th>Quantity</th>
+      </tr>
+      <tr><td>Tomato</td><td>₹1700</td><td>100kg</td></tr>
+      <tr><td>Brinjal</td><td>₹1500</td><td>100kg</td></tr>
+      <tr><td>Lady finger</td><td>₹1100</td><td>100kg</td></tr>
+      <tr><td>Onion</td><td>₹2000</td><td>100kg</td></tr>
+      <tr><td>Bell pepper</td><td>₹1300</td><td>100kg</td></tr>
+      <tr><td>Broccoli</td><td>₹7000</td><td>100kg</td></tr>
+      <tr><td>Eggplant</td><td>₹5000</td><td>100kg</td></tr>
+    </table>
+  </div>
+
+  <p class="note">Note:– Rates depend on supply and demand.</p>
+
+  <div class="footer-icons">
+    <img src="https://img.icons8.com/color/48/google-translate.png" alt="Translate">
+    <img src="https://img.icons8.com/ios-filled/50/microphone.png" alt="Voice">
+  </div>
+
+  <script>
+    const geoAPIKey = 'Your_API_Access_Token'; // Replace with real LocationIQ key
+
+    function getLocation() {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(success, error);
+      } else {
+        document.getElementById("locationDisplay").innerText = "Geolocation not supported.";
+      }
+    }
+
+    function success(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      const url = `https://us1.locationiq.com/v1/reverse?key=${geoAPIKey}&lat=${lat}&lon=${lon}&format=json`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          const city = data.address.city || data.address.town || data.address.village || '';
+          const state = data.address.state || '';
+          document.getElementById("locationDisplay").innerText = `📍 ${city}, ${state}`;
+        })
+        .catch(err => {
+          console.error('Location fetch error:', err);
+          document.getElementById("locationDisplay").innerText = "📍 Location unavailable";
+        });
+    }
+
+    function error(err) {
+      console.warn(`ERROR(${err.code}): ${err.message}`);
+      document.getElementById("locationDisplay").innerText = "📍 Location permission denied.";
+    }
+
+    function updateTable(category, clickedBtn) {
+      document.querySelectorAll(".btn-group button").forEach(btn => {
+        btn.classList.remove("active");
+        btn.style.backgroundColor = "#99ff99"; // make others green
+        btn.style.color = "#333";
+      });
+
+      clickedBtn.classList.add("active");
+      clickedBtn.style.backgroundColor = "#4da6ff";
+      clickedBtn.style.color = "white";
+
+      let html = `
+        <table>
+          <tr>
+            <th>Varieties</th>
+            <th>Market Price</th>
+            <th>Quantity</th>
+          </tr>`;
+
+      if (category === "vegetables") {
+        html += `
+          <tr><td>Tomato</td><td>₹1700</td><td>100kg</td></tr>
+          <tr><td>Brinjal</td><td>₹1500</td><td>100kg</td></tr>
+          <tr><td>Lady finger</td><td>₹1100</td><td>100kg</td></tr>
+          <tr><td>Onion</td><td>₹2000</td><td>100kg</td></tr>
+          <tr><td>Bell pepper</td><td>₹1300</td><td>100kg</td></tr>
+          <tr><td>Broccoli</td><td>₹7000</td><td>100kg</td></tr>
+          <tr><td>Eggplant</td><td>₹5000</td><td>100kg</td></tr>`;
+      } else if (category === "fruits") {
+        html += `
+          <tr><td>Banana</td><td>₹900</td><td>100kg</td></tr>
+          <tr><td>Apple</td><td>₹2500</td><td>100kg</td></tr>
+          <tr><td>Mango</td><td>₹3000</td><td>100kg</td></tr>
+          <tr><td>Orange</td><td>₹1800</td><td>100kg</td></tr>
+          <tr><td>Pineapple</td><td>₹2200</td><td>100kg</td></tr>`;
+      } else if (category === "oil") {
+        html += `
+          <tr><td>Mustard</td><td>₹5200</td><td>100kg</td></tr>
+          <tr><td>Groundnut</td><td>₹4800</td><td>100kg</td></tr>
+          <tr><td>Soybean</td><td>₹4600</td><td>100kg</td></tr>
+          <tr><td>Sesame</td><td>₹6000</td><td>100kg</td></tr>
+          <tr><td>Sunflower</td><td>₹5300</td><td>100kg</td></tr>`;
+      } else if (category === "pulses") {
+        html += `
+          <tr><td>Chana (Gram)</td><td>₹5200</td><td>100kg</td></tr>
+          <tr><td>Masoor (Lentil)</td><td>₹6000</td><td>100kg</td></tr>
+          <tr><td>Moong</td><td>₹6500</td><td>100kg</td></tr>
+          <tr><td>Urad</td><td>₹7000</td><td>100kg</td></tr>
+          <tr><td>Arhar (Tur)</td><td>₹7500</td><td>100kg</td></tr>`;
+      }
+
+      html += `</table>`;
+      document.getElementById("tableContainer").innerHTML = html;
+    }
+
+    getLocation();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #A5BFD1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+        }
+        /* Positioning Elements */
+        .logo {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            width: 120px;
+        }
+        .menu-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .bottom-left {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .bottom-right {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .otp-container {
+            margin: 20px 0;
+        }
+        .otp-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 20px;
+            margin: 5px;
+            border: 2px solid #0044cc;
+            border-radius: 8px;
+        }
+        
+        .button {
+            background-color: gray;
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 90%;
+        }
+        .button:enabled {
+            background-color: #0044cc;
+        }
+        
+        #resend-btn {
+            background-color: #0044cc;
+            color: white;
+            border-radius: 20px;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <img src="https://res.cloudinary.com/dtnmwdkou/image/upload/v1744215563/Untitled_design-removebg-preview_g1gy1h.png" alt="Mandi Mitra Logo" class="logo">
+    <!-- <div class="menu-icon">☰</div> -->
+    
+    <div class="container">
+        <h2>Enter OTP</h2>
+        <div class="otp-container">
+            <input type="text" maxlength="1" class="otp-input" id="otp1" oninput="moveToNext(this, 'otp2')">
+            <input type="text" maxlength="1" class="otp-input" id="otp2" oninput="moveToNext(this, 'otp3')">
+            <input type="text" maxlength="1" class="otp-input" id="otp3" oninput="moveToNext(this, 'otp4')">
+            <input type="text" maxlength="1" class="otp-input" id="otp4" oninput="verifyOTP()">
+        </div>
+
+        <!-- <p><b></b></p> -->
+        <p>Didn’t get the code? <button id="resend-btn" disabled onclick="resendOTP()">Resend</button></p>
+        <p>Resend will be available in <span id="timer">60</span>s</p>
+
+        <button class="button" id="continue-btn" disabled onclick="redirectToApp()">Continue</button>
+    </div>
+
+    <div class="bottom-left">🌍</div>
+    <div class="bottom-right">🎙️</div>
+
+    <script>
+        function moveToNext(current, nextId) {
+            if (current.value.length === 1 && nextId) {
+                document.getElementById(nextId).focus();
+            }
+        }
+
+        function verifyOTP() {
+            let otp = "";
+            for (let i = 1; i <= 4; i++) {
+                otp += document.getElementById('otp' + i).value;
+            }
+            if (otp.length === 4) {
+                document.getElementById("continue-btn").disabled = false;
+            }
+        }
+
+        function redirectToApp() {
+            alert("OTP Verified! Redirecting...");
+            window.location.href = "buysell.html";
+        }
+
+        function resendOTP() {
+            alert("OTP Resent!");
+            document.getElementById("resend-btn").disabled = true;
+            startTimer();
+        }
+
+        function startTimer() {
+            let timer = 60;
+            let timerInterval = setInterval(function () {
+                document.getElementById("timer").innerText = timer;
+                timer--;
+                if (timer < 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById("resend-btn").disabled = false;
+                    document.getElementById("timer").innerText = "0";
+                }
+            }, 1000);
+        }
+
+        window.onload = startTimer;
+    </script>
+</body>
+</html>

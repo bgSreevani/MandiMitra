@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mandimitra f-Registration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #b0cbe2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+            padding-top: 50px;
+        }
+
+        .logo {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            width: 170px;
+            height: 170px;
+        }
+
+        .menu-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #004b8d;
+            border-radius: 25px;
+            font-size: 16px;
+            text-align: center;
+            background-color: white;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #004b8d;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .btn:hover {
+            background-color: #003366;
+        }
+    </style>
+</head>
+<body>
+
+    <img src="https://res.cloudinary.com/dtnmwdkou/image/upload/v1744215563/Untitled_design-removebg-preview_g1gy1h.png" alt="Logo" class="logo">
+    
+    <!-- <div class="menu-icon">&#9776;</div> -->
+
+    <div class="form-container">
+        <input type="text" id="name" class="input-field" placeholder="Name">
+        <input type="tel" id="mobile" class="input-field" placeholder="Mobile Number">
+        <input type="text" id="address" class="input-field" placeholder="Address">
+
+        <select id="state" class="input-field" onchange="loadDistricts()">
+            <option value="">Select State</option>
+        </select>
+
+        <select id="district" class="input-field" onchange="loadVillages()">
+            <option value="">Select District</option>
+        </select>
+
+        <select id="village" class="input-field">
+            <option value="">Select Village</option>
+        </select>
+
+        <input type="text" id="pincode" class="input-field" placeholder="Pin code">
+        <button class="btn" onclick="registerUser()">REGISTER</button>
+    </div>
+
+    <script>
+        // All Indian States and Union Territories (sample districts and villages)
+        const stateData = {
+            "Andhra Pradesh": { "Guntur": ["Tenali", "Mangalagiri"] },
+            "Arunachal Pradesh": { "Itanagar": ["Naharlagun"] },
+            "Assam": { "Guwahati": ["Dispur", "Khanapara"] },
+            "Bihar": { "Patna": ["Danapur", "Phulwari"] },
+            "Chhattisgarh": { "Raipur": ["Naya Raipur"] },
+            "Goa": { "North Goa": ["Mapusa", "Panaji"] },
+            "Gujarat": { "Ahmedabad": ["Maninagar", "Navrangpura"] },
+            "Haryana": { "Gurgaon": ["Sohna", "Manesar"] },
+            "Himachal Pradesh": { "Shimla": ["Summer Hill"] },
+            "Jharkhand": { "Ranchi": ["Kanke", "Doranda"] },
+            "Karnataka": { "Bengaluru": ["Whitefield", "HSR"] },
+            "Kerala": { "Kochi": ["Ernakulam", "Aluva"] },
+            "Madhya Pradesh": { "Bhopal": ["TT Nagar", "Kolar"] },
+            "Maharashtra": { "Mumbai": ["Bandra", "Dadar"] },
+            "Manipur": { "Imphal": ["Singjamei"] },
+            "Meghalaya": { "Shillong": ["Laitumkhrah"] },
+            "Mizoram": { "Aizawl": ["Chaltlang"] },
+            "Nagaland": { "Kohima": ["Zubza"] },
+            "Odisha": { "Bhubaneswar": ["Patia"] },
+            "Punjab": { "Ludhiana": ["Sarabha Nagar"] },
+            "Rajasthan": { "Jaipur": ["Malviya Nagar"] },
+            "Sikkim": { "Gangtok": ["Tadong"] },
+            "Tamil Nadu": { "Chennai": ["T Nagar", "Adyar"] },
+            "Telangana": { "Hyderabad": ["Gachibowli", "Secunderabad"] },
+            "Tripura": { "Agartala": ["Badharghat"] },
+            "Uttar Pradesh": { "Lucknow": ["Hazratganj", "Gomti Nagar"] },
+            "Uttarakhand": { "Dehradun": ["Rajpur", "Ballupur"] },
+            "West Bengal": { "Kolkata": ["Salt Lake", "Howrah"] },
+            "Andaman and Nicobar Islands": { "Port Blair": ["Garacharma"] },
+            "Chandigarh": { "Chandigarh": ["Sector 17"] },
+            "Dadra and Nagar Haveli and Daman and Diu": { "Daman": ["Nani Daman"] },
+            "Delhi": { "New Delhi": ["Dwarka", "Saket"] },
+            "Jammu and Kashmir": { "Srinagar": ["Lal Chowk"] },
+            "Ladakh": { "Leh": ["Choglamsar"] },
+            "Lakshadweep": { "Kavaratti": ["Agatti"] },
+            "Puducherry": { "Puducherry": ["White Town"] }
+        };
+
+        function loadStates() {
+            const stateSelect = document.getElementById("state");
+            Object.keys(stateData).forEach(state => {
+                let option = document.createElement("option");
+                option.value = state;
+                option.textContent = state;
+                stateSelect.appendChild(option);
+            });
+        }
+
+        function loadDistricts() {
+            const stateSelect = document.getElementById("state").value;
+            const districtSelect = document.getElementById("district");
+            districtSelect.innerHTML = '<option value="">Select District</option>';
+            document.getElementById("village").innerHTML = '<option value="">Select Village</option>';
+
+            if (stateSelect && stateData[stateSelect]) {
+                Object.keys(stateData[stateSelect]).forEach(district => {
+                    let option = document.createElement("option");
+                    option.value = district;
+                    option.textContent = district;
+                    districtSelect.appendChild(option);
+                });
+            }
+        }
+
+        function loadVillages() {
+            const stateSelect = document.getElementById("state").value;
+            const districtSelect = document.getElementById("district").value;
+            const villageSelect = document.getElementById("village");
+            villageSelect.innerHTML = '<option value="">Select Village</option>';
+
+            if (stateSelect && districtSelect && stateData[stateSelect][districtSelect]) {
+                stateData[stateSelect][districtSelect].forEach(village => {
+                    let option = document.createElement("option");
+                    option.value = village;
+                    option.textContent = village;
+                    villageSelect.appendChild(option);
+                });
+            }
+        }
+
+        function registerUser() {
+            const name = document.getElementById("name").value;
+            const mobile = document.getElementById("mobile").value;
+            const address = document.getElementById("address").value;
+            const state = document.getElementById("state").value;
+            const district = document.getElementById("district").value;
+            const village = document.getElementById("village").value;
+            const pincode = document.getElementById("pincode").value;
+
+            if (!name || !mobile || !address || !state || !district || !village || !pincode) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            if (mobile.length !== 10 || isNaN(mobile)) {
+                alert("Enter a valid 10-digit mobile number.");
+                return;
+            }
+
+            alert("Registration successful!");
+            window.location.href = "login.html";
+
+        }
+
+        window.onload = loadStates;
+    </script>
+
+</body>
+</html>
